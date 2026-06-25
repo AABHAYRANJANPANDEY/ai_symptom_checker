@@ -1,13 +1,18 @@
 import os
 import json
 from dotenv import load_dotenv
+import streamlit as st  # Add this import
 from google import genai
-from google.genai import types
 
-load_dotenv()
+# Checks if running locally (.env) or on Streamlit Cloud (st.secrets)
+api_key = os.getenv("GEMINI_API_KEY") or st.secrets.get("GEMINI_API_KEY")
 
-# Initialize the official client
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+if not api_key:
+    st.error("Missing Gemini API Key! Please configure it in your secrets/environment variables.")
+
+client = genai.Client(api_key=api_key)
+
+
 
 def extract_symptoms_from_text(user_input: str, valid_features: list) -> list:
     """Uses Gemini to parse conversational text into structured standard features."""
